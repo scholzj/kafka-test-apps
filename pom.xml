@@ -19,5 +19,6 @@
 
     <modules>
         <module>kafka-consumer</module>
+        <module>kafka-producer</module>
     </modules>
 </project>
