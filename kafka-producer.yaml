@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: kafka-consumer
+  name: kafka-producer
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kafka-consumer
+    spec:
+      containers:
+      - name: kafka-producer
+        image: scholzj/kafka-producer:latest
+        env:
+          - name: BOOTSTRAP_SERVERS
+            value: kafka:9092
+          - name: TOPIC
+            value: myTopic
+          - name: TIMER
+            value: "10000"
