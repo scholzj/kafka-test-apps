@@ -5,8 +5,8 @@ import io.vertx.core.Future;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.kafka.client.producer.KafkaProducerRecord;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,13 +43,18 @@ public class KafkaTestProducer extends AbstractVerticle {
         });
 
         vertx.setPeriodic(verticleConfig.getTimer(), res -> {
-            KafkaProducerRecord<String, String> record = KafkaProducerRecord.create(verticleConfig.getTopic(), "Message " + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
-            producer.write(record, res2 -> {
-                log.info("Message sent to topic {} with value {}", record.topic(), record.value());
-            });
+            sendMessage();
         });
 
         start.complete();
+        sendMessage();
+    }
+
+    private void sendMessage() {
+        KafkaProducerRecord<String, String> record = KafkaProducerRecord.create(verticleConfig.getTopic(), "myKey", "Message " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()));
+        producer.write(record, res2 -> {
+            log.info("Message sent to topic {} with value {}", record.topic(), record.value());
+        });
     }
 
     /*
