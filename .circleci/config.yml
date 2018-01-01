@@ -15,6 +15,9 @@ jobs:
           name: Build Docker images
           command: make docker_build
       - deploy:
+          name: Login to Docker Hub
+          command: docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - deploy:
           name: Push to Docker hub
           command: make docker_push
 workflows:
