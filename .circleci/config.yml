@@ -9,11 +9,14 @@ jobs:
       - setup_remote_docker
       - checkout
       - run:
-          name: Build code and Docker images
+          name: Build code
+          command: make build
+      - run:
+          name: Build Docker images
           command: make docker_build
       - deploy:
           name: Push to Docker hub
-          command: make deocker_push
+          command: make docker_push
 workflows:
   version: 2
   build-workflow:
