@@ -16,8 +16,8 @@ spec:
         image: scholzj/kafka-producer:latest
         env:
           - name: BOOTSTRAP_SERVERS
-            value: kafka:9092
+            value: my-cluster-kafka:9092
           - name: TOPIC
-            value: myTopic
+            value: my-topic
           - name: TIMER
             value: "10000"
