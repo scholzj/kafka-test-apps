@@ -18,10 +18,15 @@ public class KafkaTestProducer extends AbstractVerticle {
 
     private final KafkaTestProducerConfig verticleConfig;
     private KafkaProducer<String, String> producer;
+    private long sentMessages = 0;
+    private int numberOfKeys;
+    private Long messageCount;
 
     public KafkaTestProducer(KafkaTestProducerConfig verticleConfig) throws Exception {
         log.info("Creating KafkaTestProducer");
         this.verticleConfig = verticleConfig;
+        this.numberOfKeys = verticleConfig.getNumberOfKeys();
+        this.messageCount = verticleConfig.getMessageCount();
     }
 
     /*
@@ -51,10 +56,20 @@ public class KafkaTestProducer extends AbstractVerticle {
     }
 
     private void sendMessage() {
-        KafkaProducerRecord<String, String> record = KafkaProducerRecord.create(verticleConfig.getTopic(), "myKey", "Message " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()));
+        KafkaProducerRecord<String, String> record = KafkaProducerRecord.create(verticleConfig.getTopic(), getKey(), "Message " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()));
         producer.write(record, res2 -> {
-            log.info("Message sent to topic {} with value {}", record.topic(), record.value());
+            log.info("Message sent to topic {} with key {} and value {}", record.topic(), record.key(), record.value());
+            sentMessages++;
+
+            if (messageCount != null && messageCount <= sentMessages)   {
+                log.info("{} messages sent ... exiting", messageCount);
+                vertx.close();
+            }
         });
+    }
+
+    private String getKey() {
+        return "key-" + sentMessages % numberOfKeys;
     }
 
     /*

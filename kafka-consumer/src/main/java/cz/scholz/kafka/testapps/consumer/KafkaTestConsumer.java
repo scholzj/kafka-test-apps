@@ -15,10 +15,13 @@ public class KafkaTestConsumer extends AbstractVerticle {
 
     private final KafkaTestConsumerConfig verticleConfig;
     private KafkaConsumer<String, String> consumer;
+    private long receivedMessages = 0;
+    private Long messageCount;
 
     public KafkaTestConsumer(KafkaTestConsumerConfig verticleConfig) throws Exception {
         log.info("Creating KafkaTestConsumer");
         this.verticleConfig = verticleConfig;
+        this.messageCount = verticleConfig.getMessageCount();
     }
 
     /*
@@ -40,6 +43,12 @@ public class KafkaTestConsumer extends AbstractVerticle {
 
         consumer.handler(res -> {
             log.info("Received message (topic: {}, offset: {}) with key {}: {}", res.topic(), res.offset(), res.key(), res.value());
+            receivedMessages++;
+
+            if (messageCount != null && messageCount <= receivedMessages)   {
+                log.info("{} messages sent ... exiting", messageCount);
+                vertx.close();
+            }
         });
 
         consumer.exceptionHandler(res -> {
