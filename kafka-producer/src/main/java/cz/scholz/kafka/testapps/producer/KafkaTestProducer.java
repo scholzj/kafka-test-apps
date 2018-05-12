@@ -63,7 +63,10 @@ public class KafkaTestProducer extends AbstractVerticle {
 
             if (messageCount != null && messageCount <= sentMessages)   {
                 log.info("{} messages sent ... exiting", messageCount);
-                vertx.close();
+
+                vertx.close(closeRes -> {
+                    System.exit(0);
+                });
             }
         });
     }
