@@ -9,7 +9,12 @@ data:
   name: kafka-test-apps
   partitions: "3"
   replicas: "1"
-  config: "{}"
+  config: |
+    {
+      "retention.bytes": "1073741824"
+      "retention.ms": "86400000"
+      "segment.bytes": "1073741824"
+    }
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
