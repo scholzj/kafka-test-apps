@@ -17,11 +17,13 @@ public class KafkaTestConsumer extends AbstractVerticle {
     private KafkaConsumer<String, String> consumer;
     private long receivedMessages = 0;
     private Long messageCount;
+    private final boolean commit;
 
     public KafkaTestConsumer(KafkaTestConsumerConfig verticleConfig) throws Exception {
         log.info("Creating KafkaTestConsumer");
         this.verticleConfig = verticleConfig;
         this.messageCount = verticleConfig.getMessageCount();
+        commit = !Boolean.parseBoolean(verticleConfig.getEnableAutoCommit());
     }
 
     /*
@@ -43,7 +45,11 @@ public class KafkaTestConsumer extends AbstractVerticle {
 
         consumer.handler(res -> {
             log.info("Received message (topic: {}, partition: {}, offset: {}) with key {}: {}", res.topic(), res.partition(), res.offset(), res.key(), res.value());
-            consumer.commit();
+
+            if (commit) {
+                consumer.commit();
+            }
+
             receivedMessages++;
 
             if (messageCount != null && messageCount <= receivedMessages)   {
