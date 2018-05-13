@@ -43,6 +43,7 @@ public class KafkaTestConsumer extends AbstractVerticle {
 
         consumer.handler(res -> {
             log.info("Received message (topic: {}, partition: {}, offset: {}) with key {}: {}", res.topic(), res.partition(), res.offset(), res.key(), res.value());
+            consumer.commit();
             receivedMessages++;
 
             if (messageCount != null && messageCount <= receivedMessages)   {
