@@ -48,9 +48,8 @@ public class KafkaTestConsumer extends AbstractVerticle {
             if (messageCount != null && messageCount <= receivedMessages)   {
                 log.info("{} messages received ... exiting", messageCount);
                 consumer.close();
-                vertx.close(closeRes -> {
-                    System.exit(0);
-                });
+                vertx.close();
+                System.exit(0);
             }
         });
 
