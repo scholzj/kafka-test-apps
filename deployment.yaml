@@ -8,7 +8,7 @@ metadata:
 data:
   name: kafka-test-apps
   partitions: "3"
-  replicas: "1"
+  replicas: "3"
   config: |-
     {
       "retention.bytes": "1073741824",
@@ -38,7 +38,7 @@ spec:
           - name: TOPIC
             value: kafka-test-apps
           - name: TIMER
-            value: "10000"
+            value: "1000"
           - name: NUMBER_OF_KEYS
             value: "3"
 #          - name: MESSAGE_COUNT
