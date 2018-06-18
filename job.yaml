@@ -40,7 +40,7 @@ spec:
           - name: TOPIC
             value: kafka-test-apps-job
           - name: TIMER
-            value: "10000"
+            value: "1000"
           - name: NUMBER_OF_KEYS
             value: "3"
           - name: MESSAGE_COUNT
