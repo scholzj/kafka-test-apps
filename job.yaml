@@ -8,7 +8,7 @@ metadata:
 data:
   name: kafka-test-apps-job
   partitions: "3"
-  replicas: "1"
+  replicas: "3"
   config: |-
     {
       "retention.bytes": "1073741824",
