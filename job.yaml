@@ -36,7 +36,7 @@ spec:
         image: scholzj/kafka-producer:latest
         env:
           - name: BOOTSTRAP_SERVERS
-            value: my-cluster-kafka:9092
+            value: my-cluster-kafka-bootstrap:9092
           - name: TOPIC
             value: kafka-test-apps-job
           - name: TIMER
@@ -67,7 +67,7 @@ spec:
         image: scholzj/kafka-consumer:latest
         env:
           - name: BOOTSTRAP_SERVERS
-            value: my-cluster-kafka:9092
+            value: my-cluster-kafka-bootstrap:9092
           - name: TOPIC
             value: kafka-test-apps-job
           - name: GROUP_ID
