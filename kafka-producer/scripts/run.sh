@@ -21,7 +21,7 @@ function create_keystore {
    RANDFILE=/tmp/.rnd openssl pkcs12 -export -in $3 -inkey $4 -chain -CAfile $5 -name $HOSTNAME -password pass:$2 -out $1
 }
 
-if [ ! -z $CA_CRT];
+if [ "$CA_CRT" ];
 then
     echo "Preparing truststore"
     export TRUSTSTORE_PASSWORD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c32)
@@ -30,7 +30,7 @@ then
     export TRUSTSTORE_PATH=/tmp/truststore.p12
 fi
 
-if [ ! -z $USER_CRT && ! -z $USER_KEY];
+if [[ "$USER_CRT" && "$USER_KEY" ]];
 then
     echo "Preparing keystore"
     export KEYSTORE_PASSWORD=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c32)
