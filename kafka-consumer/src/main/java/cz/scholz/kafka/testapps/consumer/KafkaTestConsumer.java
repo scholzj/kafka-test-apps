@@ -4,6 +4,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.kafka.client.consumer.KafkaConsumer;
 
+import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +41,20 @@ public class KafkaTestConsumer extends AbstractVerticle {
         config.put("enable.auto.commit", verticleConfig.getEnableAutoCommit());
         config.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         config.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+
+        if (verticleConfig.getTrustStorePassword() != null && verticleConfig.getTrustStorePath() != null)   {
+            log.info("Configuring truststore");
+            config.put("ssl.truststore.type", "PKCS12");
+            config.put("ssl.truststore.password", verticleConfig.getTrustStorePassword());
+            config.put("ssl.truststore.location", verticleConfig.getTrustStorePath());
+        }
+
+        if (verticleConfig.getKeyStorePassword() != null && verticleConfig.getKeyStorePath() != null)   {
+            log.info("Configuring keystore");
+            config.put("ssl.keystore.type", "PKCS12");
+            config.put("ssl.keystore.password", verticleConfig.getKeyStorePassword());
+            config.put("ssl.keystore.location", verticleConfig.getKeyStorePath());
+        }
 
         consumer = KafkaConsumer.create(vertx, config, String.class, String.class);
 

@@ -42,6 +42,20 @@ public class KafkaTestProducer extends AbstractVerticle {
         config.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         config.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 
+        if (verticleConfig.getTrustStorePassword() != null && verticleConfig.getTrustStorePath() != null)   {
+            log.info("Configuring truststore");
+            config.put("ssl.truststore.type", "PKCS12");
+            config.put("ssl.truststore.password", verticleConfig.getTrustStorePassword());
+            config.put("ssl.truststore.location", verticleConfig.getTrustStorePath());
+        }
+
+        if (verticleConfig.getKeyStorePassword() != null && verticleConfig.getKeyStorePath() != null)   {
+            log.info("Configuring keystore");
+            config.put("ssl.keystore.type", "PKCS12");
+            config.put("ssl.keystore.password", verticleConfig.getKeyStorePassword());
+            config.put("ssl.keystore.location", verticleConfig.getKeyStorePath());
+        }
+
         producer = KafkaProducer.create(vertx, config, String.class, String.class);
         producer.exceptionHandler(res -> {
             log.error("Received exception", res);
