@@ -44,6 +44,7 @@ public class KafkaTestConsumer extends AbstractVerticle {
 
         if (verticleConfig.getTrustStorePassword() != null && verticleConfig.getTrustStorePath() != null)   {
             log.info("Configuring truststore");
+            config.put("security.protocol", "SSL");
             config.put("ssl.truststore.type", "PKCS12");
             config.put("ssl.truststore.password", verticleConfig.getTrustStorePassword());
             config.put("ssl.truststore.location", verticleConfig.getTrustStorePath());
@@ -51,6 +52,7 @@ public class KafkaTestConsumer extends AbstractVerticle {
 
         if (verticleConfig.getKeyStorePassword() != null && verticleConfig.getKeyStorePath() != null)   {
             log.info("Configuring keystore");
+            config.put("security.protocol", "SSL");
             config.put("ssl.keystore.type", "PKCS12");
             config.put("ssl.keystore.password", verticleConfig.getKeyStorePassword());
             config.put("ssl.keystore.location", verticleConfig.getKeyStorePath());
