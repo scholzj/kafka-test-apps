@@ -1,7 +1,7 @@
 apiVersion: kafka.strimzi.io/v1alpha1
 kind: KafkaTopic
 metadata:
-  name: kafka-test-apps
+  name: kafka-test-apps-job
   labels:
     strimzi.io/cluster: my-cluster
 spec:
@@ -12,14 +12,16 @@ spec:
       retention.ms: 86400000
       segment.bytes: 1073741824
 ---
-apiVersion: extensions/v1beta1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
   labels:
-    app: kafka-producer
-  name: kafka-producer
+    app: kafka-producer-job
+  name: kafka-producer-job
 spec:
-  replicas: 1
+  parallelism: 1
+  completions: 1
+  backoffLimit: 5
   template:
     metadata:
       labels:
@@ -37,22 +39,25 @@ spec:
           - name: BOOTSTRAP_SERVERS
             value: my-cluster-kafka-bootstrap:9093
           - name: TOPIC
-            value: kafka-test-apps
+            value: kafka-test-apps-job
           - name: TIMER
             value: "1000"
           - name: NUMBER_OF_KEYS
             value: "3"
-#          - name: MESSAGE_COUNT
-#            value: "1000000"
+          - name: MESSAGE_COUNT
+            value: "100"
+      restartPolicy: OnFailure
 ---
-apiVersion: extensions/v1beta1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
   labels:
-    app: kafka-consumer
-  name: kafka-consumer
+    app: kafka-consumer-job
+  name: kafka-consumer-job
 spec:
-  replicas: 1
+  parallelism: 1
+  completions: 1
+  backoffLimit: 5
   template:
     metadata:
       labels:
@@ -70,8 +75,9 @@ spec:
           - name: BOOTSTRAP_SERVERS
             value: my-cluster-kafka-bootstrap:9093
           - name: TOPIC
-            value: kafka-test-apps
+            value: kafka-test-apps-job
           - name: GROUP_ID
             value: my-kafka-consumer
-#          - name: MESSAGE_COUNT
-#            value: "1000000"
+          - name: MESSAGE_COUNT
+            value: "100"
+      restartPolicy: OnFailure
