@@ -72,7 +72,7 @@ public class KafkaTestProducer extends AbstractVerticle {
     }
 
     private void sendMessage() {
-        KafkaProducerRecord<String, String> record = KafkaProducerRecord.create(verticleConfig.getTopic(), getKey(), "Message " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()));
+        KafkaProducerRecord<String, String> record = KafkaProducerRecord.create(verticleConfig.getTopic(), getKey(), "{ \"Message\": \"" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "\" }");
         producer.write(record, res2 -> {
             log.info("Message sent to topic {} with key {} and value {}", record.topic(), record.key(), record.value());
             sentMessages++;
