@@ -62,7 +62,7 @@ public class KafkaTestConsumer extends AbstractVerticle {
             config.put("sasl.mechanism","SCRAM-SHA-512");
             config.put("sasl.jaas.config", "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"" + verticleConfig.getUsername() + "\" password=\"" + verticleConfig.getPassword() + "\";");
 
-            if (config.get("security.protocol").equals("SSL"))  {
+            if (config.get("security.protocol") != null && config.get("security.protocol").equals("SSL"))  {
                 config.put("security.protocol","SASL_SSL");
             } else {
                 config.put("security.protocol","SASL_PLAINTEXT");
