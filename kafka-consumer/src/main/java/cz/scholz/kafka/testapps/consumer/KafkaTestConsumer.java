@@ -58,6 +58,17 @@ public class KafkaTestConsumer extends AbstractVerticle {
             config.put("ssl.keystore.location", verticleConfig.getKeyStorePath());
         }
 
+        if (verticleConfig.getUsername() != null && verticleConfig.getPassword() != null)   {
+            config.put("sasl.mechanism","SCRAM-SHA-512");
+            config.put("sasl.jaas.config", "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"" + verticleConfig.getUsername() + "\" password=\"" + verticleConfig.getPassword() + "\";");
+
+            if (config.get("security.protocol").equals("SSL"))  {
+                config.put("security.protocol","SASL_SSL");
+            } else {
+                config.put("security.protocol","SASL_PLAINTEXT");
+            }
+        }
+
         consumer = KafkaConsumer.create(vertx, config, String.class, String.class);
 
         consumer.handler(res -> {

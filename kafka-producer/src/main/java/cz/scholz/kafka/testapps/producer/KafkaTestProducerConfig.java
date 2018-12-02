@@ -11,8 +11,10 @@ public class KafkaTestProducerConfig {
     private final String trustStorePath;
     private final String keyStorePassword;
     private final String keyStorePath;
+    private final String username;
+    private final String password;
 
-    public KafkaTestProducerConfig(String bootstrapServers, String topic, int timer, int numberOfKeys, Long messageCount, String trustStorePassword, String trustStorePath, String keyStorePassword, String keyStorePath) {
+    public KafkaTestProducerConfig(String bootstrapServers, String topic, int timer, int numberOfKeys, Long messageCount, String trustStorePassword, String trustStorePath, String keyStorePassword, String keyStorePath, String username, String password) {
         this.bootstrapServers = bootstrapServers;
         this.topic = topic;
         this.timer = timer;
@@ -22,6 +24,8 @@ public class KafkaTestProducerConfig {
         this.trustStorePath = trustStorePath;
         this.keyStorePassword = keyStorePassword;
         this.keyStorePath = keyStorePath;
+        this.username = username;
+        this.password = password;
     }
 
     public static KafkaTestProducerConfig fromEnv() {
@@ -34,8 +38,10 @@ public class KafkaTestProducerConfig {
         String trustStorePath = System.getenv("TRUSTSTORE_PATH") == null ? null : System.getenv("TRUSTSTORE_PATH");
         String keyStorePassword = System.getenv("KEYSTORE_PASSWORD") == null ? null : System.getenv("KEYSTORE_PASSWORD");
         String keyStorePath = System.getenv("KEYSTORE_PATH") == null ? null : System.getenv("KEYSTORE_PATH");
+        String username = System.getenv("USERNAME") == null ? null : System.getenv("USERNAME");
+        String password = System.getenv("PASSWORD") == null ? null : System.getenv("PASSWORD");
 
-        return new KafkaTestProducerConfig(bootstrapServers, topic, timer, numberOfKeys, messageCount, trustStorePassword, trustStorePath, keyStorePassword, keyStorePath);
+        return new KafkaTestProducerConfig(bootstrapServers, topic, timer, numberOfKeys, messageCount, trustStorePassword, trustStorePath, keyStorePassword, keyStorePath, username, password);
     }
 
     public String getBootstrapServers() {
@@ -76,5 +82,13 @@ public class KafkaTestProducerConfig {
 
     public String getKeyStorePath() {
         return keyStorePath;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }
