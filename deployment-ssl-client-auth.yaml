@@ -3,7 +3,6 @@ kind: KafkaUser
 metadata:
   name: kafka-test-apps-producer
   labels:
-    jakub: scholz
     strimzi.io/cluster: my-cluster
 spec:
   authentication:
@@ -29,7 +28,6 @@ kind: KafkaUser
 metadata:
   name: kafka-test-apps-consumer
   labels:
-    jakub: scholz
     strimzi.io/cluster: my-cluster
 spec:
   authentication:
