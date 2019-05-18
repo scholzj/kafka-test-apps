@@ -1,4 +1,4 @@
-apiVersion: kafka.strimzi.io/v1alpha1
+apiVersion: kafka.strimzi.io/v1beta1
 kind: KafkaUser
 metadata:
   name: kafka-test-apps-producer-sasl
@@ -23,7 +23,7 @@ spec:
         name: kafka-test-apps
       operation: Describe
 ---
-apiVersion: kafka.strimzi.io/v1alpha1
+apiVersion: kafka.strimzi.io/v1beta1
 kind: KafkaUser
 metadata:
   name: kafka-test-apps-consumer-sasl
@@ -48,7 +48,7 @@ spec:
         name: my-kafka-consumer-sasl
       operation: Read
 ---
-apiVersion: kafka.strimzi.io/v1alpha1
+apiVersion: kafka.strimzi.io/v1beta1
 kind: KafkaTopic
 metadata:
   name: kafka-test-apps

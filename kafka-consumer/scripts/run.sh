@@ -7,7 +7,7 @@ set +x
 # $3: Public key to be imported
 # $4: Alias of the certificate
 function create_truststore {
-   keytool -keystore $1 -storepass $2 -noprompt -alias $4 -import -file $3 -storetype PKCS12
+   keytool -keystore $1 -storepass $2 -trustcacerts -noprompt -alias $4 -import -file $3 -storetype PKCS12
 }
 
 # Parameters:
