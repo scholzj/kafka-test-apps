@@ -12,6 +12,56 @@ spec:
       retention.ms: 86400000
       segment.bytes: 1073741824
 ---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaUser
+metadata:
+  name: kafka-test-apps-job-producer
+  labels:
+    strimzi.io/cluster: my-cluster
+spec:
+  authentication:
+    type: tls
+  authorization:
+    type: simple
+    acls:
+      - resource:
+          type: topic
+          name: kafka-test-apps-job
+        operation: Write
+      - resource:
+          type: topic
+          name: kafka-test-apps-job
+        operation: Create
+      - resource:
+          type: topic
+          name: kafka-test-apps-job
+        operation: Describe
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaUser
+metadata:
+  name: kafka-test-apps-job-consumer
+  labels:
+    strimzi.io/cluster: my-cluster
+spec:
+  authentication:
+    type: tls
+  authorization:
+    type: simple
+    acls:
+      - resource:
+          type: topic
+          name: kafka-test-apps-job
+        operation: Read
+      - resource:
+          type: topic
+          name: kafka-test-apps-job
+        operation: Describe
+      - resource:
+          type: group
+          name: my-kafka-consumer-job
+        operation: Read
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -25,10 +75,10 @@ spec:
   template:
     metadata:
       labels:
-        app: kafka-producer
+        app: kafka-producer-job
     spec:
       containers:
-      - name: kafka-producer
+      - name: kafka-producer-job
         image: scholzj/kafka-producer:latest
         env:
           - name: CA_CRT
@@ -39,23 +89,23 @@ spec:
           - name: USER_CRT
             valueFrom:
               secretKeyRef:
-                name: user1
-                key: user1.pem
+                name: kafka-test-apps-job-producer
+                key: user.crt
           - name: USER_KEY
             valueFrom:
               secretKeyRef:
-                name: user1
-                key: user1-key.pem
+                name: kafka-test-apps-job-producer
+                key: user.key
           - name: BOOTSTRAP_SERVERS
             value: my-cluster-kafka-bootstrap:9093
           - name: TOPIC
             value: kafka-test-apps-job
           - name: TIMER
-            value: "1000"
+            value: "20"
           - name: NUMBER_OF_KEYS
             value: "3"
           - name: MESSAGE_COUNT
-            value: "100"
+            value: "1000000"
       restartPolicy: OnFailure
 ---
 apiVersion: batch/v1
@@ -71,10 +121,10 @@ spec:
   template:
     metadata:
       labels:
-        app: kafka-consumer
+        app: kafka-consumer-job
     spec:
       containers:
-      - name: kafka-consumer
+      - name: kafka-consumer-job
         image: scholzj/kafka-consumer:latest
         env:
           - name: CA_CRT
@@ -85,19 +135,19 @@ spec:
           - name: USER_CRT
             valueFrom:
               secretKeyRef:
-                name: user1
-                key: user1.pem
+                name: kafka-test-apps-job-consumer
+                key: user.crt
           - name: USER_KEY
             valueFrom:
               secretKeyRef:
-                name: user1
-                key: user1-key.pem
+                name: kafka-test-apps-job-consumer
+                key: user.key
           - name: BOOTSTRAP_SERVERS
             value: my-cluster-kafka-bootstrap:9093
           - name: TOPIC
             value: kafka-test-apps-job
           - name: GROUP_ID
-            value: my-kafka-consumer
+            value: my-kafka-consumer-job
           - name: MESSAGE_COUNT
-            value: "100"
+            value: "1000000"
       restartPolicy: OnFailure
