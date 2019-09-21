@@ -62,7 +62,7 @@ spec:
       retention.ms: 86400000
       segment.bytes: 1073741824
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
@@ -70,6 +70,9 @@ metadata:
   name: kafka-producer-sasl
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-producer-sasl
   template:
     metadata:
       labels:
@@ -89,6 +92,8 @@ spec:
             value: "3"
           - name: USERNAME
             value: "kafka-test-apps-producer-sasl"
+          - name: AUTH
+            value: "scram-sha-512"
           - name: PASSWORD
             valueFrom:
               secretKeyRef:
@@ -97,7 +102,7 @@ spec:
 #          - name: MESSAGE_COUNT
 #            value: "1000000"
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
@@ -105,6 +110,9 @@ metadata:
   name: kafka-consumer-sasl
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-consumer-sasl
   template:
     metadata:
       labels:
@@ -122,6 +130,8 @@ spec:
             value: my-kafka-consumer-sasl
           - name: USERNAME
             value: "kafka-test-apps-consumer-sasl"
+          - name: AUTH
+            value: "scram-sha-512"
           - name: PASSWORD
             valueFrom:
               secretKeyRef:
