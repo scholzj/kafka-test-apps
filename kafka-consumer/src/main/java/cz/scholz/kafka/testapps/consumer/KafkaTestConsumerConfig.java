@@ -3,6 +3,7 @@ package cz.scholz.kafka.testapps.consumer;
 public class KafkaTestConsumerConfig {
     private final String bootstrapServers;
     private final String topic;
+    private final String pattern;
     private final String groupId;
     private final String autoOffsetReset = "earliest";
     private final String enableAutoCommit = "false";
@@ -17,9 +18,10 @@ public class KafkaTestConsumerConfig {
     private final String auth;
     private final String token;
 
-    public KafkaTestConsumerConfig(String bootstrapServers, String topic, String groupId, Long messageCount, String trustStorePassword, String trustStorePath, String keyStorePassword, String keyStorePath, boolean hostnameVerification, String username, String password, String auth, String token) {
+    public KafkaTestConsumerConfig(String bootstrapServers, String topic, String pattern, String groupId, Long messageCount, String trustStorePassword, String trustStorePath, String keyStorePassword, String keyStorePath, boolean hostnameVerification, String username, String password, String auth, String token) {
         this.bootstrapServers = bootstrapServers;
         this.topic = topic;
+        this.pattern = pattern;
         this.groupId = groupId;
         this.messageCount = messageCount;
         this.trustStorePassword = trustStorePassword;
@@ -36,6 +38,7 @@ public class KafkaTestConsumerConfig {
     public static KafkaTestConsumerConfig fromEnv() {
         String bootstrapServers = System.getenv("BOOTSTRAP_SERVERS");
         String topic = System.getenv("TOPIC");
+        String pattern = System.getenv("PATTERN");
         String groupId = System.getenv("GROUP_ID");
         Long messageCount = System.getenv("MESSAGE_COUNT") == null ? null : Long.valueOf(System.getenv("MESSAGE_COUNT"));
         String trustStorePassword = System.getenv("TRUSTSTORE_PASSWORD") == null ? null : System.getenv("TRUSTSTORE_PASSWORD");
@@ -48,7 +51,7 @@ public class KafkaTestConsumerConfig {
         String auth = System.getenv("AUTH") == null ? null : System.getenv("AUTH");
         String token = System.getenv("TOKEN") == null ? null : System.getenv("TOKEN");
 
-        return new KafkaTestConsumerConfig(bootstrapServers, topic, groupId, messageCount, trustStorePassword, trustStorePath, keyStorePassword, keyStorePath, hostnameVerification, username, password, auth, token);
+        return new KafkaTestConsumerConfig(bootstrapServers, topic, pattern, groupId, messageCount, trustStorePassword, trustStorePath, keyStorePassword, keyStorePath, hostnameVerification, username, password, auth, token);
     }
 
     public String getBootstrapServers() {
@@ -57,6 +60,10 @@ public class KafkaTestConsumerConfig {
 
     public String getTopic() {
         return topic;
+    }
+
+    public String getPatttern() {
+        return pattern;
     }
 
     public String getGroupId() {

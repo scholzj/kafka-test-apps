@@ -7,6 +7,7 @@ import io.vertx.kafka.client.consumer.KafkaConsumer;
 import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.kafka.common.config.SslConfigs;
 import org.slf4j.Logger;
@@ -120,17 +121,28 @@ public class KafkaTestConsumer extends AbstractVerticle {
             log.error("Received exception", res);
         });
 
-        consumer.subscribe(verticleConfig.getTopic(), res -> {
-            if (res.succeeded()) {
-                log.info("Subscribed to topic {}", verticleConfig.getTopic());
-                start.complete();
-            }
-            else {
-                log.error("Failed to subscribe to topic {}", verticleConfig.getTopic());
-                start.fail("Failed to subscribe to topic " + verticleConfig.getTopic());
-            }
-        });
-
+        if (verticleConfig.getPatttern() != null) {
+            consumer.subscribe(Pattern.compile(verticleConfig.getPatttern()), res -> {
+                if (res.succeeded()) {
+                    log.info("Subscribed to pattern {}", verticleConfig.getPatttern());
+                    start.complete();
+                } else {
+                    log.error("Failed to subscribe to pattern {}", verticleConfig.getPatttern());
+                    start.fail("Failed to subscribe to pattern " + verticleConfig.getPatttern());
+                }
+            });
+        } else {
+            consumer.subscribe(verticleConfig.getTopic(), res -> {
+                if (res.succeeded()) {
+                    log.info("Subscribed to topic {}", verticleConfig.getTopic());
+                    start.complete();
+                }
+                else {
+                    log.error("Failed to subscribe to topic {}", verticleConfig.getTopic());
+                    start.fail("Failed to subscribe to topic " + verticleConfig.getTopic());
+                }
+            });
+        }
     }
 
     /*
