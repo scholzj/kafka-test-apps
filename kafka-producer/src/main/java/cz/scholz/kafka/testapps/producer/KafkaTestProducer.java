@@ -127,7 +127,7 @@ public class KafkaTestProducer extends AbstractVerticle {
     }
 
     private String getKey() {
-        return "key-" + sentMessages % numberOfKeys;
+        return "{\"key\":\"" + sentMessages % numberOfKeys + "\"}";
     }
 
     /*
