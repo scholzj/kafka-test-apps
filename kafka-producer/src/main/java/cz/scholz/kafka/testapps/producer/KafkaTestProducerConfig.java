@@ -51,7 +51,7 @@ public class KafkaTestProducerConfig {
         String password = System.getenv("PASSWORD") == null ? null : System.getenv("PASSWORD");
         String auth = System.getenv("AUTH") == null ? null : System.getenv("AUTH");
         String token = System.getenv("TOKEN") == null ? null : System.getenv("TOKEN");
-        String message = System.getenv("MESSAGE") == null ? null : System.getenv("MESSAGE");
+        String message = System.getenv("MESSAGE") == null ? "Hello World" : System.getenv("MESSAGE");
 
         return new KafkaTestProducerConfig(bootstrapServers, topic, timer, numberOfKeys, messageCount, trustStorePassword, trustStorePath, keyStorePassword, keyStorePath, hostnameVerification, username, password, auth, token, message);
     }
