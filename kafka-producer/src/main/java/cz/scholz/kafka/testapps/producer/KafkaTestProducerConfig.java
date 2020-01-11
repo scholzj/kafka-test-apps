@@ -11,10 +11,14 @@ public class KafkaTestProducerConfig {
     private final String trustStorePath;
     private final String keyStorePassword;
     private final String keyStorePath;
+    private final boolean hostnameVerification;
     private final String username;
     private final String password;
+    private final String auth;
+    private final String token;
+    private final String message;
 
-    public KafkaTestProducerConfig(String bootstrapServers, String topic, int timer, int numberOfKeys, Long messageCount, String trustStorePassword, String trustStorePath, String keyStorePassword, String keyStorePath, String username, String password) {
+    public KafkaTestProducerConfig(String bootstrapServers, String topic, int timer, int numberOfKeys, Long messageCount, String trustStorePassword, String trustStorePath, String keyStorePassword, String keyStorePath, boolean hostnameVerification, String username, String password, String auth, String token, String message) {
         this.bootstrapServers = bootstrapServers;
         this.topic = topic;
         this.timer = timer;
@@ -24,8 +28,12 @@ public class KafkaTestProducerConfig {
         this.trustStorePath = trustStorePath;
         this.keyStorePassword = keyStorePassword;
         this.keyStorePath = keyStorePath;
+        this.hostnameVerification = hostnameVerification;
         this.username = username;
         this.password = password;
+        this.auth = auth;
+        this.token = token;
+        this.message = message;
     }
 
     public static KafkaTestProducerConfig fromEnv() {
@@ -38,10 +46,14 @@ public class KafkaTestProducerConfig {
         String trustStorePath = System.getenv("TRUSTSTORE_PATH") == null ? null : System.getenv("TRUSTSTORE_PATH");
         String keyStorePassword = System.getenv("KEYSTORE_PASSWORD") == null ? null : System.getenv("KEYSTORE_PASSWORD");
         String keyStorePath = System.getenv("KEYSTORE_PATH") == null ? null : System.getenv("KEYSTORE_PATH");
+        boolean hostnameVerification = System.getenv("HOSTNAME_VERIFICATION") == null ? true : Boolean.parseBoolean(System.getenv("HOSTNAME_VERIFICATION"));
         String username = System.getenv("USERNAME") == null ? null : System.getenv("USERNAME");
         String password = System.getenv("PASSWORD") == null ? null : System.getenv("PASSWORD");
+        String auth = System.getenv("AUTH") == null ? null : System.getenv("AUTH");
+        String token = System.getenv("TOKEN") == null ? null : System.getenv("TOKEN");
+        String message = System.getenv("MESSAGE") == null ? null : System.getenv("MESSAGE");
 
-        return new KafkaTestProducerConfig(bootstrapServers, topic, timer, numberOfKeys, messageCount, trustStorePassword, trustStorePath, keyStorePassword, keyStorePath, username, password);
+        return new KafkaTestProducerConfig(bootstrapServers, topic, timer, numberOfKeys, messageCount, trustStorePassword, trustStorePath, keyStorePassword, keyStorePath, hostnameVerification, username, password, auth, token, message);
     }
 
     public String getBootstrapServers() {
@@ -84,11 +96,27 @@ public class KafkaTestProducerConfig {
         return keyStorePath;
     }
 
+    public boolean isHostnameVerification() {
+        return hostnameVerification;
+    }
+
     public String getUsername() {
         return username;
     }
 
     public String getPassword() {
         return password;
+    }
+
+    public String getAuth() {
+        return auth;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }
