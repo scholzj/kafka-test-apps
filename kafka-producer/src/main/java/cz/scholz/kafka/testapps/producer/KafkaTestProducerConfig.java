@@ -6,7 +6,7 @@ public class KafkaTestProducerConfig {
     private final int timer;
     private final int numberOfKeys;
     private final Long messageCount;
-    private String acks = "1";
+    private final String acks;
     private final String trustStorePassword;
     private final String trustStorePath;
     private final String keyStorePassword;
@@ -18,12 +18,13 @@ public class KafkaTestProducerConfig {
     private final String token;
     private final String message;
 
-    public KafkaTestProducerConfig(String bootstrapServers, String topic, int timer, int numberOfKeys, Long messageCount, String trustStorePassword, String trustStorePath, String keyStorePassword, String keyStorePath, boolean hostnameVerification, String username, String password, String auth, String token, String message) {
+    public KafkaTestProducerConfig(String bootstrapServers, String topic, int timer, int numberOfKeys, Long messageCount, String acks, String trustStorePassword, String trustStorePath, String keyStorePassword, String keyStorePath, boolean hostnameVerification, String username, String password, String auth, String token, String message) {
         this.bootstrapServers = bootstrapServers;
         this.topic = topic;
         this.timer = timer;
         this.numberOfKeys = numberOfKeys;
         this.messageCount = messageCount;
+        this.acks = acks;
         this.trustStorePassword = trustStorePassword;
         this.trustStorePath = trustStorePath;
         this.keyStorePassword = keyStorePassword;
@@ -42,6 +43,7 @@ public class KafkaTestProducerConfig {
         int timer = Integer.valueOf(System.getenv("TIMER"));
         int numberOfKeys = Integer.parseInt(System.getenv("NUMBER_OF_KEYS") == null ? "1" : System.getenv("NUMBER_OF_KEYS"));
         Long messageCount = System.getenv("MESSAGE_COUNT") == null ? null : Long.valueOf(System.getenv("MESSAGE_COUNT"));
+        String acks = System.getenv("ACKS") == null ? "1" : System.getenv("ACKS");
         String trustStorePassword = System.getenv("TRUSTSTORE_PASSWORD") == null ? null : System.getenv("TRUSTSTORE_PASSWORD");
         String trustStorePath = System.getenv("TRUSTSTORE_PATH") == null ? null : System.getenv("TRUSTSTORE_PATH");
         String keyStorePassword = System.getenv("KEYSTORE_PASSWORD") == null ? null : System.getenv("KEYSTORE_PASSWORD");
@@ -53,7 +55,7 @@ public class KafkaTestProducerConfig {
         String token = System.getenv("TOKEN") == null ? null : System.getenv("TOKEN");
         String message = System.getenv("MESSAGE") == null ? "Hello World" : System.getenv("MESSAGE");
 
-        return new KafkaTestProducerConfig(bootstrapServers, topic, timer, numberOfKeys, messageCount, trustStorePassword, trustStorePath, keyStorePassword, keyStorePath, hostnameVerification, username, password, auth, token, message);
+        return new KafkaTestProducerConfig(bootstrapServers, topic, timer, numberOfKeys, messageCount, acks, trustStorePassword, trustStorePath, keyStorePassword, keyStorePath, hostnameVerification, username, password, auth, token, message);
     }
 
     public String getBootstrapServers() {
