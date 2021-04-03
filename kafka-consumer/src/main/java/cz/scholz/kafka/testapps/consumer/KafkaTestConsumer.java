@@ -1,17 +1,16 @@
 package cz.scholz.kafka.testapps.consumer;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.kafka.client.consumer.KafkaConsumer;
-
-import java.security.KeyStore;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
-
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.common.config.SslConfigs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 public class KafkaTestConsumer extends AbstractVerticle {
     private static final Logger log = LoggerFactory.getLogger(KafkaTestConsumer.class.getName());
@@ -19,10 +18,10 @@ public class KafkaTestConsumer extends AbstractVerticle {
     private final KafkaTestConsumerConfig verticleConfig;
     private KafkaConsumer<String, String> consumer;
     private long receivedMessages = 0;
-    private Long messageCount;
+    private final Long messageCount;
     private final boolean commit;
 
-    public KafkaTestConsumer(KafkaTestConsumerConfig verticleConfig) throws Exception {
+    public KafkaTestConsumer(KafkaTestConsumerConfig verticleConfig) {
         log.info("Creating KafkaTestConsumer");
         this.verticleConfig = verticleConfig;
         this.messageCount = verticleConfig.getMessageCount();
@@ -33,7 +32,7 @@ public class KafkaTestConsumer extends AbstractVerticle {
     Start the verticle
      */
     @Override
-    public void start(Future<Void> start) {
+    public void start(Promise<Void> start) {
         log.info("Starting KafkaTestConsumer");
 
         if (System.getenv("JAVAX_NET_DEBUG") != null)   {
@@ -54,20 +53,19 @@ public class KafkaTestConsumer extends AbstractVerticle {
             config.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
         }
 
-        if (verticleConfig.getTrustStorePassword() != null && verticleConfig.getTrustStorePath() != null)   {
+        if (verticleConfig.getSslTruststoreCertificates() != null)   {
             log.info("Configuring truststore");
-            config.put("security.protocol", "SSL");
-            config.put("ssl.truststore.type", "PKCS12");
-            config.put("ssl.truststore.password", verticleConfig.getTrustStorePassword());
-            config.put("ssl.truststore.location", verticleConfig.getTrustStorePath());
+            config.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");
+            config.put(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG, "PEM");
+            config.put(SslConfigs.SSL_TRUSTSTORE_CERTIFICATES_CONFIG, verticleConfig.getSslTruststoreCertificates());
         }
 
-        if (verticleConfig.getKeyStorePassword() != null && verticleConfig.getKeyStorePath() != null)   {
+        if (verticleConfig.getSslKeystoreCertificateChain() != null && verticleConfig.getSslKeystoreKey() != null)   {
             log.info("Configuring keystore");
-            config.put("security.protocol", "SSL");
-            config.put("ssl.keystore.type", "PKCS12");
-            config.put("ssl.keystore.password", verticleConfig.getKeyStorePassword());
-            config.put("ssl.keystore.location", verticleConfig.getKeyStorePath());
+            config.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");
+            config.put(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, "PEM");
+            config.put(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG, verticleConfig.getSslKeystoreCertificateChain());
+            config.put(SslConfigs.SSL_KEYSTORE_KEY_CONFIG, verticleConfig.getSslKeystoreKey());
         }
 
         if ("scram-sha-512".equals(verticleConfig.getAuth()) && verticleConfig.getUsername() != null && verticleConfig.getPassword() != null)   {
@@ -117,9 +115,7 @@ public class KafkaTestConsumer extends AbstractVerticle {
             }
         });
 
-        consumer.exceptionHandler(res -> {
-            log.error("Received exception", res);
-        });
+        consumer.exceptionHandler(res -> log.error("Received exception", res));
 
         if (verticleConfig.getPatttern() != null) {
             consumer.subscribe(Pattern.compile(verticleConfig.getPatttern()), res -> {
@@ -149,10 +145,8 @@ public class KafkaTestConsumer extends AbstractVerticle {
     Stop the verticle
      */
     @Override
-    public void stop(Future<Void> stopFuture) throws Exception {
+    public void stop(Promise<Void> stop) {
         log.info("Stopping the consumer.");
-        consumer.endHandler(res -> {
-            stopFuture.complete();
-        });
+        consumer.endHandler(res -> stop.complete());
     }
 }

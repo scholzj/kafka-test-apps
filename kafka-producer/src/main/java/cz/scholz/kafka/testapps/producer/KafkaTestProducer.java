@@ -1,18 +1,18 @@
 package cz.scholz.kafka.testapps.producer;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.kafka.client.producer.KafkaProducerRecord;
+import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.common.config.SslConfigs;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.kafka.common.config.SslConfigs;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class KafkaTestProducer extends AbstractVerticle {
     private static final Logger log = LoggerFactory.getLogger(KafkaTestProducer.class.getName());
@@ -20,10 +20,10 @@ public class KafkaTestProducer extends AbstractVerticle {
     private final KafkaTestProducerConfig verticleConfig;
     private KafkaProducer<String, String> producer;
     private long sentMessages = 0;
-    private int numberOfKeys;
-    private Long messageCount;
+    private final int numberOfKeys;
+    private final Long messageCount;
 
-    public KafkaTestProducer(KafkaTestProducerConfig verticleConfig) throws Exception {
+    public KafkaTestProducer(KafkaTestProducerConfig verticleConfig) {
         log.info("Creating KafkaTestProducer");
         this.verticleConfig = verticleConfig;
         this.numberOfKeys = verticleConfig.getNumberOfKeys();
@@ -34,7 +34,7 @@ public class KafkaTestProducer extends AbstractVerticle {
     Start the verticle
      */
     @Override
-    public void start(Future<Void> start) {
+    public void start(Promise<Void> start) {
         log.info("Starting KafkaTestProducer");
 
         if (System.getenv("JAVAX_NET_DEBUG") != null)   {
@@ -53,20 +53,19 @@ public class KafkaTestProducer extends AbstractVerticle {
             config.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
         }
 
-        if (verticleConfig.getTrustStorePassword() != null && verticleConfig.getTrustStorePath() != null)   {
+        if (verticleConfig.getSslTruststoreCertificates() != null)   {
             log.info("Configuring truststore");
-            config.put("security.protocol", "SSL");
-            config.put("ssl.truststore.type", "PKCS12");
-            config.put("ssl.truststore.password", verticleConfig.getTrustStorePassword());
-            config.put("ssl.truststore.location", verticleConfig.getTrustStorePath());
+            config.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");
+            config.put(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG, "PEM");
+            config.put(SslConfigs.SSL_TRUSTSTORE_CERTIFICATES_CONFIG, verticleConfig.getSslTruststoreCertificates());
         }
 
-        if (verticleConfig.getKeyStorePassword() != null && verticleConfig.getKeyStorePath() != null)   {
+        if (verticleConfig.getSslKeystoreCertificateChain() != null && verticleConfig.getSslKeystoreKey() != null)   {
             log.info("Configuring keystore");
-            config.put("security.protocol", "SSL");
-            config.put("ssl.keystore.type", "PKCS12");
-            config.put("ssl.keystore.password", verticleConfig.getKeyStorePassword());
-            config.put("ssl.keystore.location", verticleConfig.getKeyStorePath());
+            config.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");
+            config.put(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, "PEM");
+            config.put(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG, verticleConfig.getSslKeystoreCertificateChain());
+            config.put(SslConfigs.SSL_KEYSTORE_KEY_CONFIG, verticleConfig.getSslKeystoreKey());
         }
 
         if ("scram-sha-512".equals(verticleConfig.getAuth()) && verticleConfig.getUsername() != null && verticleConfig.getPassword() != null)   {
@@ -98,13 +97,9 @@ public class KafkaTestProducer extends AbstractVerticle {
         }
 
         producer = KafkaProducer.create(vertx, config, String.class, String.class);
-        producer.exceptionHandler(res -> {
-            log.error("Received exception", res);
-        });
+        producer.exceptionHandler(res -> log.error("Received exception", res));
 
-        vertx.setPeriodic(verticleConfig.getTimer(), res -> {
-            sendMessage();
-        });
+        vertx.setPeriodic(verticleConfig.getTimer(), res -> sendMessage());
 
         start.complete();
         sendMessage();
@@ -119,9 +114,7 @@ public class KafkaTestProducer extends AbstractVerticle {
             if (messageCount != null && messageCount <= sentMessages)   {
                 log.info("{} messages sent ... exiting", messageCount);
 
-                vertx.close(closeRes -> {
-                    System.exit(0);
-                });
+                vertx.close(closeRes -> System.exit(0));
             }
         });
     }
@@ -134,10 +127,8 @@ public class KafkaTestProducer extends AbstractVerticle {
     Stop the verticle
      */
     @Override
-    public void stop(Future<Void> stopFuture) throws Exception {
+    public void stop(Promise<Void> stop) {
         log.info("Stopping the producer.");
-        producer.close(res -> {
-            stopFuture.complete();
-        });
+        producer.close(res -> stop.complete());
     }
 }

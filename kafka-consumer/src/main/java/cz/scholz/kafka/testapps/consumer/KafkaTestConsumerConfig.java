@@ -8,26 +8,27 @@ public class KafkaTestConsumerConfig {
     private final String autoOffsetReset = "earliest";
     private final String enableAutoCommit = "false";
     private final Long messageCount;
-    private final String trustStorePassword;
-    private final String trustStorePath;
-    private final String keyStorePassword;
-    private final String keyStorePath;
+    private final String sslTruststoreCertificates;
+    private final String sslKeystoreKey;
+    private final String sslKeystoreCertificateChain;
     private final boolean hostnameVerification;
     private final String username;
     private final String password;
     private final String auth;
     private final String token;
 
-    public KafkaTestConsumerConfig(String bootstrapServers, String topic, String pattern, String groupId, Long messageCount, String trustStorePassword, String trustStorePath, String keyStorePassword, String keyStorePath, boolean hostnameVerification, String username, String password, String auth, String token) {
+    public KafkaTestConsumerConfig(String bootstrapServers, String topic, String pattern, String groupId,
+                                   Long messageCount, String sslTruststoreCertificates, String sslKeystoreKey,
+                                   String sslKeystoreCertificateChain, boolean hostnameVerification, String username,
+                                   String password, String auth, String token) {
         this.bootstrapServers = bootstrapServers;
         this.topic = topic;
         this.pattern = pattern;
         this.groupId = groupId;
         this.messageCount = messageCount;
-        this.trustStorePassword = trustStorePassword;
-        this.trustStorePath = trustStorePath;
-        this.keyStorePassword = keyStorePassword;
-        this.keyStorePath = keyStorePath;
+        this.sslTruststoreCertificates = sslTruststoreCertificates;
+        this.sslKeystoreKey = sslKeystoreKey;
+        this.sslKeystoreCertificateChain = sslKeystoreCertificateChain;
         this.hostnameVerification = hostnameVerification;
         this.username = username;
         this.password = password;
@@ -41,17 +42,18 @@ public class KafkaTestConsumerConfig {
         String pattern = System.getenv("PATTERN");
         String groupId = System.getenv("GROUP_ID");
         Long messageCount = System.getenv("MESSAGE_COUNT") == null ? null : Long.valueOf(System.getenv("MESSAGE_COUNT"));
-        String trustStorePassword = System.getenv("TRUSTSTORE_PASSWORD") == null ? null : System.getenv("TRUSTSTORE_PASSWORD");
-        String trustStorePath = System.getenv("TRUSTSTORE_PATH") == null ? null : System.getenv("TRUSTSTORE_PATH");
-        String keyStorePassword = System.getenv("KEYSTORE_PASSWORD") == null ? null : System.getenv("KEYSTORE_PASSWORD");
-        String keyStorePath = System.getenv("KEYSTORE_PATH") == null ? null : System.getenv("KEYSTORE_PATH");
-        boolean hostnameVerification = System.getenv("HOSTNAME_VERIFICATION") == null ? true : Boolean.parseBoolean(System.getenv("HOSTNAME_VERIFICATION"));
+        String sslTruststoreCertificates = System.getenv("CA_CRT");
+        String sslKeystoreKey = System.getenv("USER_KEY");
+        String sslKeystoreCertificateChain = System.getenv("USER_CRT");
+        boolean hostnameVerification = System.getenv("HOSTNAME_VERIFICATION") == null || Boolean.parseBoolean(System.getenv("HOSTNAME_VERIFICATION"));
         String username = System.getenv("USERNAME") == null ? null : System.getenv("USERNAME");
         String password = System.getenv("PASSWORD") == null ? null : System.getenv("PASSWORD");
         String auth = System.getenv("AUTH") == null ? null : System.getenv("AUTH");
         String token = System.getenv("TOKEN") == null ? null : System.getenv("TOKEN");
 
-        return new KafkaTestConsumerConfig(bootstrapServers, topic, pattern, groupId, messageCount, trustStorePassword, trustStorePath, keyStorePassword, keyStorePath, hostnameVerification, username, password, auth, token);
+        return new KafkaTestConsumerConfig(bootstrapServers, topic, pattern, groupId, messageCount,
+                sslTruststoreCertificates, sslKeystoreKey, sslKeystoreCertificateChain, hostnameVerification, username,
+                password, auth, token);
     }
 
     public String getBootstrapServers() {
@@ -82,20 +84,16 @@ public class KafkaTestConsumerConfig {
         return messageCount;
     }
 
-    public String getTrustStorePassword() {
-        return trustStorePassword;
+    public String getSslTruststoreCertificates() {
+        return sslTruststoreCertificates;
     }
 
-    public String getTrustStorePath() {
-        return trustStorePath;
+    public String getSslKeystoreKey() {
+        return sslKeystoreKey;
     }
 
-    public String getKeyStorePassword() {
-        return keyStorePassword;
-    }
-
-    public String getKeyStorePath() {
-        return keyStorePath;
+    public String getSslKeystoreCertificateChain() {
+        return sslKeystoreCertificateChain;
     }
 
     public boolean isHostnameVerification() {

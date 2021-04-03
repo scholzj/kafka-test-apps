@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 public class Main {
     private static final Logger log = LoggerFactory.getLogger(Main.class.getName());
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         try {
             Vertx vertx = Vertx.vertx();
             vertx.deployVerticle(new KafkaTestConsumer(KafkaTestConsumerConfig.fromEnv()), res -> {
