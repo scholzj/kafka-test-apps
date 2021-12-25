@@ -11,18 +11,35 @@ DOCKERFILE_DIR     ?= ./
 DOCKER_REGISTRY    ?= docker.io
 DOCKER_ORG         ?= $(USER)
 DOCKER_TAG         ?= latest
-DOCKER_VERSION_ARG ?= latest
+VERSION            ?= latest
+
+ifdef DOCKER_ARCHITECTURE
+  DOCKER_PLATFORM = --platform linux/$(DOCKER_ARCHITECTURE)
+  DOCKER_PLATFORM_TAG_SUFFIX = -$(DOCKER_ARCHITECTURE)
+endif
 
 all: docker_build docker_push
 
 docker_build:
 	echo "Building Docker image ..."
-	docker build --build-arg version=$(DOCKER_VERSION_ARG) -t scholzj/$(PROJECT_NAME):$(DOCKER_TAG) $(DOCKERFILE_DIR)
+	docker build --no-cache $(DOCKER_PLATFORM) --build-arg project=$(PROJECT_NAME) --build-arg version=$(VERSION) -t scholzj/$(PROJECT_NAME):$(DOCKER_TAG)$(DOCKER_PLATFORM_TAG_SUFFIX) $(DOCKERFILE_DIR)
 
 docker_tag:
-	echo "Tagging scholzj/$(PROJECT_NAME):$(DOCKER_TAG) to $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(PROJECT_NAME):$(DOCKER_TAG) ..."
-	docker tag scholzj/$(PROJECT_NAME):$(DOCKER_TAG) $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(PROJECT_NAME):$(DOCKER_TAG)
+	echo "Tagging scholzj/$(PROJECT_NAME):$(DOCKER_TAG)$(DOCKER_PLATFORM_TAG_SUFFIX) to $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(PROJECT_NAME):$(DOCKER_TAG)$(DOCKER_PLATFORM_TAG_SUFFIX) ..."
+	docker tag scholzj/$(PROJECT_NAME):$(DOCKER_TAG)$(DOCKER_PLATFORM_TAG_SUFFIX) $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(PROJECT_NAME):$(DOCKER_TAG)$(DOCKER_PLATFORM_TAG_SUFFIX)
 
 docker_push: docker_tag
-	echo "Pushing $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(PROJECT_NAME):$(DOCKER_TAG) ..."
-	docker push $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(PROJECT_NAME):$(DOCKER_TAG)
+	echo "Pushing $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(PROJECT_NAME):$(DOCKER_TAG)$(DOCKER_PLATFORM_TAG_SUFFIX) ..."
+	docker push $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(PROJECT_NAME):$(DOCKER_TAG)$(DOCKER_PLATFORM_TAG_SUFFIX)
+
+docker_amend_manifest:
+	# Create / Amend the manifest
+	docker manifest create $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(PROJECT_NAME):$(DOCKER_TAG) --amend $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(PROJECT_NAME):$(DOCKER_TAG)$(DOCKER_PLATFORM_TAG_SUFFIX)
+
+docker_push_manifest:
+	# Push the manifest to the registry
+	docker manifest push $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(PROJECT_NAME):$(DOCKER_TAG)
+
+docker_delete_manifest:
+	# Delete the manifest to the registry, ignore the error if manifest doesn't exist
+	docker manifest rm $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(PROJECT_NAME):$(DOCKER_TAG) || true

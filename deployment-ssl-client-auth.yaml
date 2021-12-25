@@ -80,7 +80,7 @@ spec:
     spec:
       containers:
       - name: kafka-producer
-        image: scholzj/kafka-producer:latest
+        image: ghcr.io/scholzj/kafka-producer:latest
         env:
           - name: CA_CRT
             valueFrom:
@@ -104,7 +104,7 @@ spec:
           - name: TIMER
             value: "1000"
           - name: NUMBER_OF_KEYS
-            value: "3"
+            value: "12"
 #          - name: MESSAGE_COUNT
 #            value: "1000000"
 ---
@@ -126,7 +126,7 @@ spec:
     spec:
       containers:
       - name: kafka-consumer
-        image: scholzj/kafka-consumer:latest
+        image: ghcr.io/scholzj/kafka-consumer:latest
         env:
           - name: CA_CRT
             valueFrom:

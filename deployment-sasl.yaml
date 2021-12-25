@@ -80,7 +80,7 @@ spec:
     spec:
       containers:
       - name: kafka-producer
-        image: scholzj/kafka-producer:latest
+        image: ghcr.io/scholzj/kafka-producer:latest
         env:
           - name: BOOTSTRAP_SERVERS
             value: my-cluster-kafka-bootstrap:9092
@@ -120,7 +120,7 @@ spec:
     spec:
       containers:
       - name: kafka-consumer
-        image: scholzj/kafka-consumer:latest
+        image: ghcr.io/scholzj/kafka-consumer:latest
         env:
           - name: BOOTSTRAP_SERVERS
             value: my-cluster-kafka-bootstrap:9092

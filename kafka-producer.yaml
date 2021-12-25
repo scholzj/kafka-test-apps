@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: kafka-producer
-        image: scholzj/kafka-producer:latest
+        image: ghcr.io/ghcr.io/scholzj/kafka-producer:latest
         env:
           - name: BOOTSTRAP_SERVERS
             value: my-cluster-kafka-bootstrap:9092
