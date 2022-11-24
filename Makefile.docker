@@ -22,7 +22,7 @@ all: docker_build docker_push
 
 docker_build:
 	echo "Building Docker image ..."
-	docker build --no-cache $(DOCKER_PLATFORM) --build-arg project=$(PROJECT_NAME) --build-arg version=$(VERSION) -t scholzj/$(PROJECT_NAME):$(DOCKER_TAG)$(DOCKER_PLATFORM_TAG_SUFFIX) $(DOCKERFILE_DIR)
+	docker build --no-cache $(DOCKER_PLATFORM) -t scholzj/$(PROJECT_NAME):$(DOCKER_TAG)$(DOCKER_PLATFORM_TAG_SUFFIX) $(DOCKERFILE_DIR)
 
 docker_tag:
 	echo "Tagging scholzj/$(PROJECT_NAME):$(DOCKER_TAG)$(DOCKER_PLATFORM_TAG_SUFFIX) to $(DOCKER_REGISTRY)/$(DOCKER_ORG)/$(PROJECT_NAME):$(DOCKER_TAG)$(DOCKER_PLATFORM_TAG_SUFFIX) ..."
