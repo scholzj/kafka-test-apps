@@ -1,14 +1,16 @@
-FROM ghcr.io/scholzj/java-base-image:jdk11-latest
+FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
 
 LABEL org.opencontainers.image.source="https://github.com/scholzj/kafka-test-apps/kafka-producer/" \
       summary="Sample Kafka producer written in Vert.x" \
       description="Sample Kafka producer written in Vert.x"
 
-ARG version=1.0-SNAPSHOT
-ENV VERSION ${version}
+ARG JAVA_VERSION=17
 
-ARG project=none
-ENV PROJECT ${project}
+RUN microdnf update \
+    && microdnf --setopt=install_weak_deps=0 --setopt=tsflags=nodocs install java-${JAVA_VERSION}-openjdk-headless \
+    && microdnf clean all
+
+ENV JAVA_HOME /usr/lib/jvm/jre-17
 
 COPY ./scripts/ /bin
 

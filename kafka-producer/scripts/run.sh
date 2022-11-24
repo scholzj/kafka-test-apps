@@ -1,4 +1,6 @@
 #!/bin/bash
 set +x
 
-exec /bin/launch_java.sh $1
+JAVA_OPTS="${JAVA_OPTS} -Dvertx.cacheDirBase=/tmp/vertx-cache"
+
+exec java $JAVA_OPTS -jar $1 $@
