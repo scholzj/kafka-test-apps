@@ -27,15 +27,7 @@ spec:
       - resource:
           type: topic
           name: kafka-test-apps-job
-        operation: Write
-      - resource:
-          type: topic
-          name: kafka-test-apps-job
-        operation: Create
-      - resource:
-          type: topic
-          name: kafka-test-apps-job
-        operation: Describe
+        operations: [ Write, Create, Describe ]
 ---
 apiVersion: kafka.strimzi.io/v1beta1
 kind: KafkaUser
@@ -52,15 +44,11 @@ spec:
       - resource:
           type: topic
           name: kafka-test-apps-job
-        operation: Read
-      - resource:
-          type: topic
-          name: kafka-test-apps-job
-        operation: Describe
+        operations: [ Read, Describe ]
       - resource:
           type: group
           name: my-kafka-consumer-job
-        operation: Read
+        operations: [ Read ]
 ---
 apiVersion: batch/v1
 kind: Job

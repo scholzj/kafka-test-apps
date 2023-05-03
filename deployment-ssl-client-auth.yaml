@@ -13,15 +13,7 @@ spec:
       - resource:
           type: topic
           name: kafka-test-apps
-        operation: Write
-      - resource:
-          type: topic
-          name: kafka-test-apps
-        operation: Create
-      - resource:
-          type: topic
-          name: kafka-test-apps
-        operation: Describe
+        operations: [ Write, Create, Describe ]
 ---
 apiVersion: kafka.strimzi.io/v1beta1
 kind: KafkaUser
@@ -38,15 +30,11 @@ spec:
       - resource:
           type: topic
           name: kafka-test-apps
-        operation: Read
-      - resource:
-          type: topic
-          name: kafka-test-apps
-        operation: Describe
+        operations: [ Read, Describe ]
       - resource:
           type: group
           name: my-kafka-consumer
-        operation: Read
+        operations: [ Read ]
 ---
 apiVersion: kafka.strimzi.io/v1beta1
 kind: KafkaTopic
