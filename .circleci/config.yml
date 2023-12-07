@@ -9,7 +9,7 @@ jobs:
       DOCKER_REGISTRY: ghcr.io
       MVN_ARGS: -e -V -B
     docker:
-      - image: scholzj/circleci-centos-java:latest
+      - image: scholzj/circleci-centos-java:latest-java17
     steps:
       - setup_remote_docker:
           version: 20.10.7
