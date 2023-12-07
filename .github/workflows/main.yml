@@ -1,0 +1,57 @@
+name: Build Kafka Test Apps
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        architecture: [ 'amd64', 'arm64' ]
+
+    steps:
+      # Checkout sources
+      - uses: actions/checkout@v3
+
+      # Install Java
+      - uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # Setup Maven cache
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # Setup QEMU for multiplatform Docker builds
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      # Build the Java project
+      - name: Build the Java project
+        run: make build
+
+      # Build the Container images
+      - name: Build and push the containers for amd64
+        run: DOCKER_ARCHITECTURE=amd64 make docker_build docker_push docker_amend_manifest
+#        with:
+#          architecture: ${{ matrix.language }}
+      - name: Build and push the containers for arm64
+        run: DOCKER_ARCHITECTURE=arm64 make docker_build docker_push docker_amend_manifest
+
+      # Push the container manifest
+      - name: Push the container manifest
+        run: make docker_push_manifest
