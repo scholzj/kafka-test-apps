@@ -1,4 +1,4 @@
-apiVersion: kafka.strimzi.io/v1beta1
+apiVersion: kafka.strimzi.io/v1
 kind: KafkaUser
 metadata:
   name: kafka-test-apps-producer-sasl
@@ -13,17 +13,17 @@ spec:
     - resource:
         type: topic
         name: kafka-test-apps
-      operation: Write
+      operations: [ Write ]
     - resource:
         type: topic
         name: kafka-test-apps
-      operation: Create
+      operations: [ Create ]
     - resource:
         type: topic
         name: kafka-test-apps
-      operation: Describe
+      operations: [ Describe ]
 ---
-apiVersion: kafka.strimzi.io/v1beta1
+apiVersion: kafka.strimzi.io/v1
 kind: KafkaUser
 metadata:
   name: kafka-test-apps-consumer-sasl
@@ -38,17 +38,20 @@ spec:
     - resource:
         type: topic
         name: kafka-test-apps
-      operation: Read
+      operations:
+        - Read
     - resource:
         type: topic
         name: kafka-test-apps
-      operation: Describe
+      operations:
+        - Describe
     - resource:
         type: group
         name: my-kafka-consumer-sasl
-      operation: Read
+      operations:
+        - Read
 ---
-apiVersion: kafka.strimzi.io/v1beta1
+apiVersion: kafka.strimzi.io/v1
 kind: KafkaTopic
 metadata:
   name: kafka-test-apps
