@@ -118,26 +118,28 @@ public class KafkaTestConsumer extends AbstractVerticle {
         consumer.exceptionHandler(res -> log.error("Received exception", res));
 
         if (verticleConfig.getPatttern() != null) {
-            consumer.subscribe(Pattern.compile(verticleConfig.getPatttern()), res -> {
-                if (res.succeeded()) {
-                    log.info("Subscribed to pattern {}", verticleConfig.getPatttern());
-                    start.complete();
-                } else {
-                    log.error("Failed to subscribe to pattern {}", verticleConfig.getPatttern());
-                    start.fail("Failed to subscribe to pattern " + verticleConfig.getPatttern());
-                }
-            });
+            consumer.subscribe(Pattern.compile(verticleConfig.getPatttern()))
+                    .onComplete(res -> {
+                        if (res.succeeded()) {
+                            log.info("Subscribed to pattern {}", verticleConfig.getPatttern());
+                            start.complete();
+                        } else {
+                            log.error("Failed to subscribe to pattern {}", verticleConfig.getPatttern());
+                            start.fail("Failed to subscribe to pattern " + verticleConfig.getPatttern());
+                        }
+                    });
         } else {
-            consumer.subscribe(verticleConfig.getTopic(), res -> {
-                if (res.succeeded()) {
-                    log.info("Subscribed to topic {}", verticleConfig.getTopic());
-                    start.complete();
-                }
-                else {
-                    log.error("Failed to subscribe to topic {}", verticleConfig.getTopic());
-                    start.fail("Failed to subscribe to topic " + verticleConfig.getTopic());
-                }
-            });
+            consumer.subscribe(verticleConfig.getTopic())
+                    .onComplete(res -> {
+                        if (res.succeeded()) {
+                            log.info("Subscribed to topic {}", verticleConfig.getTopic());
+                            start.complete();
+                        }
+                        else {
+                            log.error("Failed to subscribe to topic {}", verticleConfig.getTopic());
+                            start.fail("Failed to subscribe to topic " + verticleConfig.getTopic());
+                        }
+                    });
         }
     }
 

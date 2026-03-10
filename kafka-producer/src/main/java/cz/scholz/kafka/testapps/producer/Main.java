@@ -10,12 +10,13 @@ public class Main {
     public static void main(String[] args) {
         try {
             Vertx vertx = Vertx.vertx();
-            vertx.deployVerticle(new KafkaTestProducer(KafkaTestProducerConfig.fromEnv()), res -> {
-                if (res.failed()) {
-                    log.error("Failed to start the verticle", res.cause());
-                    System.exit(1);
-                }
-            });
+            vertx.deployVerticle(new KafkaTestProducer(KafkaTestProducerConfig.fromEnv()))
+                    .onComplete(res -> {
+                        if (res.failed()) {
+                            log.error("Failed to start the verticle", res.cause());
+                            System.exit(1);
+                        }
+                    });
         } catch (IllegalArgumentException e) {
             log.error("Unable to parse arguments", e);
             System.exit(1);

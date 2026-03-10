@@ -107,16 +107,18 @@ public class KafkaTestProducer extends AbstractVerticle {
 
     private void sendMessage() {
         KafkaProducerRecord<String, String> record = KafkaProducerRecord.create(verticleConfig.getTopic(), getKey(), "{ \"" + verticleConfig.getMessage() + "\": \"" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) + "\" }");
-        producer.write(record, res2 -> {
-            log.info("Message sent to topic {} with key {} and value {}", record.topic(), record.key(), record.value());
-            sentMessages++;
+        producer.write(record)
+                .onComplete(res2 -> {
+                    log.info("Message sent to topic {} with key {} and value {}", record.topic(), record.key(), record.value());
+                    sentMessages++;
 
-            if (messageCount != null && messageCount <= sentMessages)   {
-                log.info("{} messages sent ... exiting", messageCount);
+                    if (messageCount != null && messageCount <= sentMessages)   {
+                        log.info("{} messages sent ... exiting", messageCount);
 
-                vertx.close(closeRes -> System.exit(0));
-            }
-        });
+                        vertx.close()
+                                .onComplete(closeRes -> System.exit(0));
+                    }
+                });
     }
 
     private String getKey() {
@@ -129,6 +131,7 @@ public class KafkaTestProducer extends AbstractVerticle {
     @Override
     public void stop(Promise<Void> stop) {
         log.info("Stopping the producer.");
-        producer.close(res -> stop.complete());
+        producer.close()
+                .onComplete(res -> stop.complete());
     }
 }
